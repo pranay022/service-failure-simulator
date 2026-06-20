@@ -1,0 +1,42 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Service {
+  id           String       @id @default(uuid())
+  name         String       @unique
+  description  String?
+  owner        String?
+  criticality  String       // "HIGH" | "MEDIUM" | "LOW"
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  // Relations
+  dependencies Dependency[] @relation("dependentRelation") // The services this service depends on
+  dependents   Dependency[] @relation("dependencyRelation") // The services that depend on this service
+}
+
+model Dependency {
+  id           String   @id @default(uuid())
+  dependentId  String
+  dependent    Service  @relation("dependentRelation", fields: [dependentId], references: [id], onDelete: Cascade)
+  dependencyId String
+  dependency   Service  @relation("dependencyRelation", fields: [dependencyId], references: [id], onDelete: Cascade)
+  type         String   // "HARD" | "SOFT"
+  createdAt    DateTime @default(now())
+
+  @@unique([dependentId, dependencyId])
+}
+
+model SimulationRun {
+  id                     String   @id @default(uuid())
+  name                   String
+  initialFailedServiceIds Json     // Array of service IDs that were initially failed
+  results                Json     // Details of simulation run: affected services, blast radius, severity
+  createdAt              DateTime @default(now())
+}
