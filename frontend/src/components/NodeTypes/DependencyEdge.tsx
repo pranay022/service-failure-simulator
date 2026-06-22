@@ -12,7 +12,6 @@ export const DependencyEdge: React.FC<EdgeProps> = ({
   targetPosition,
   markerEnd,
   style,
-  className,
 }) => {
   let edgePath = '';
 
@@ -44,7 +43,6 @@ export const DependencyEdge: React.FC<EdgeProps> = ({
       path={edgePath}
       markerEnd={markerEnd}
       style={style}
-      className={className}
     />
   );
 };
