@@ -1,5 +1,7 @@
 import { Service, Dependency, SimulationRun, SimulationResult } from './types';
 
+const API_BASE = import.meta.env.VITE_API_URL || '';
+
 // Helper to handle fetch responses and throw HttpError on failure
 async function handleResponse<T>(response: Response): Promise<T> {
   const json = await response.json();
@@ -12,7 +14,7 @@ async function handleResponse<T>(response: Response): Promise<T> {
 export const api = {
   // Service APIs
   async getServices(): Promise<Service[]> {
-    const res = await fetch('/api/services');
+    const res = await fetch(`${API_BASE}/api/services`);
     return handleResponse<Service[]>(res);
   },
 
@@ -22,7 +24,7 @@ export const api = {
     owner?: string | null;
     criticality: 'HIGH' | 'MEDIUM' | 'LOW';
   }): Promise<Service> {
-    const res = await fetch('/api/services', {
+    const res = await fetch(`${API_BASE}/api/services`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
@@ -39,7 +41,7 @@ export const api = {
       criticality?: 'HIGH' | 'MEDIUM' | 'LOW';
     }
   ): Promise<Service> {
-    const res = await fetch(`/api/services/${id}`, {
+    const res = await fetch(`${API_BASE}/api/services/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
@@ -48,7 +50,7 @@ export const api = {
   },
 
   async deleteService(id: string): Promise<void> {
-    const res = await fetch(`/api/services/${id}`, {
+    const res = await fetch(`${API_BASE}/api/services/${id}`, {
       method: 'DELETE',
     });
     const json = await res.json();
@@ -59,7 +61,7 @@ export const api = {
 
   // Dependency APIs
   async getDependencies(): Promise<Dependency[]> {
-    const res = await fetch('/api/dependencies');
+    const res = await fetch(`${API_BASE}/api/dependencies`);
     return handleResponse<Dependency[]>(res);
   },
 
@@ -68,7 +70,7 @@ export const api = {
     dependencyId: string;
     type: 'HARD' | 'SOFT';
   }): Promise<Dependency> {
-    const res = await fetch('/api/dependencies', {
+    const res = await fetch(`${API_BASE}/api/dependencies`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
@@ -77,7 +79,7 @@ export const api = {
   },
 
   async deleteDependency(id: string): Promise<void> {
-    const res = await fetch(`/api/dependencies/${id}`, {
+    const res = await fetch(`${API_BASE}/api/dependencies/${id}`, {
       method: 'DELETE',
     });
     const json = await res.json();
@@ -88,7 +90,7 @@ export const api = {
 
   // Simulation APIs
   async runSimulation(initialFailedServiceIds: string[]): Promise<SimulationResult> {
-    const res = await fetch('/api/simulations/run', {
+    const res = await fetch(`${API_BASE}/api/simulations/run`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ initialFailedServiceIds }),
@@ -97,7 +99,7 @@ export const api = {
   },
 
   async saveSimulation(name: string, initialFailedServiceIds: string[]): Promise<SimulationRun> {
-    const res = await fetch('/api/simulations/save', {
+    const res = await fetch(`${API_BASE}/api/simulations/save`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, initialFailedServiceIds }),
@@ -106,12 +108,12 @@ export const api = {
   },
 
   async getSimulationHistory(): Promise<SimulationRun[]> {
-    const res = await fetch('/api/simulations/history');
+    const res = await fetch(`${API_BASE}/api/simulations/history`);
     return handleResponse<SimulationRun[]>(res);
   },
 
   async getSimulationRun(id: string): Promise<SimulationRun> {
-    const res = await fetch(`/api/simulations/history/${id}`);
+    const res = await fetch(`${API_BASE}/api/simulations/history/${id}`);
     return handleResponse<SimulationRun>(res);
   },
 };
